@@ -1,0 +1,76 @@
+
+<fieldset>
+	<@row>
+		<legend>#i18n{module.workflow.extendcomment.task_comment_notification_config.title}</legend>
+		<@div class='col-sm-8'>
+			<@formGroup labelKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelSubject}' helpKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelSubjectHelp}' mandatory=true>
+				<@input type='text' id='subject' name='subject' value='${(config.subject)!}' mandatory=true></@input>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelSenderName}' helpKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelSenderNameHelp}' max=255 mandatory=true>
+				<@input type='text' id='senderName' name='senderName' value='${(config.senderName)!}' mandatory=true></@input>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelSenderEmail}' helpKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelSenderEmailHelp}' max=255 mandatory=true>
+				<@input type='text' id='senderEmail' name='senderEmail' value='${(config.senderEmail)!}' mandatory=true></@input>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelMessage}' helpKey='#i18n{module.workflow.extendcomment.task_comment_notification_config.labelMessageHelp}' mandatory=true>
+				<@input type='textarea' id='message' class='richtext' name='message' value='${(config.message)!}'  mandatory=true >${(config.message)!}</@input>
+			</@formGroup>
+		</@div>	
+		<@div class='col-sm-4'>
+			<h3>#i18n{module.workflow.extendcomment.task_comment_notification_config.markers.label_table_title}</h3>
+			<@table>
+				<tr>
+					<th>#i18n{module.workflow.extendcomment.task_comment_notification_config.markers.label_description}</th>
+					<th>#i18n{module.workflow.extendcomment.task_comment_notification_config.markers.label_marker}</th>
+					<th></th>
+				</tr>
+				<#if email_markers?exists>
+					<#list email_markers as marker>
+						<tr>
+							<@td class='marker'>
+								${marker.name!''}
+							</@td>
+							<@td class='marker'>&#36;&#123;${marker.code}&#33;&#125;</@td>
+							<@td><@icon style='copy' title='Copy line' /></@td>
+						</tr>
+					</#list>
+				</#if>
+			</@table>
+		</@div>
+	</@row>
+</fieldset>
+<#include "/admin/util/editor/editor.html" />
+<@initEditor cssFiles='${webapp_url}css/bootstrap.min.css,${webapp_url}css/theme-parisfr.css,${webapp_url}css/page_template_styles.css' />
+
+<style>
+	.marker:hover, .fa-copy:hover{ cursor: pointer; opacity: .8}
+	.marker:nth-child(even) td{ background: #777; color: #fff }
+</style>
+<script>
+$(document).ready(function(){
+	$('.marker').on( 'dblclick', function(e){
+		if( $( '.tab-pane.active .richtext' ).length > 0 ){
+			var c = '<p>' + $(this).text() + '</p>';
+			tinymce.activeEditor.insertContent( '<p>' + c + '</p>' );
+		} else { 
+			var c = $(this).text().replace(/\s+/g, ' ');
+			$('textarea').val( c );
+		}
+	});
+
+	$('.fa-copy').on( 'click', function(e){
+		$(this).parent().prevAll().css( 'opacity','.5').animate( {opacity: 1}, 3000 );
+		var elTxt = $(this).parent().siblings().text(); 
+		copyToClipboard( elTxt );	
+	});
+});
+
+function copyToClipboard( txt ) {
+	var $temp = $("<input>"), sTxt=txt.replace(/\s+/g, ' ');
+	$("body").append($temp);
+	$temp.val( sTxt ).select();
+	document.execCommand("copy");
+	$temp.remove();
+}
+
+</script>
