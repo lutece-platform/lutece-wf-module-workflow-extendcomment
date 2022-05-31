@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <!-- DAO -->
+    <bean id="workflow-extendcomment.taskCommentNotificationConfigDAO"
+        class="fr.paris.lutece.plugins.workflow.modules.extendcomment.business.CommentNotificationTaskConfigDAO" />
+
+    <!-- Services -->
+    <bean id="workflow-extendcomment.taskCommentNotificationConfigService"
+        class="fr.paris.lutece.plugins.workflowcore.service.config.TaskConfigService"
+        p:taskConfigDAO-ref="workflow-extendcomment.taskCommentNotificationConfigDAO" />
+    <bean id="workflow-extendcomment.commentNotificationService"
+        class="fr.paris.lutece.plugins.workflow.modules.extendcomment.service.CommentNotificationService" />
+
+    <!-- Task -->
+    <bean id="workflow-extendcomment.taskCommentNotification"
+        class="fr.paris.lutece.plugins.workflowcore.business.task.TaskType"
+        p:key="taskCommentNotification" p:titleI18nKey="module.workflow.extendcomment.task_comment_notification.title"
+        p:beanName="workflow-extendcomment.commentNotificationTask"
+        p:configBeanName="workflow-extendcomment.commentNotificationTaskConfig"
+        p:configRequired="true" p:formTaskRequired="true"
+        p:taskForAutomaticAction="true" />
+
+    <bean id="workflow-extendcomment.commentNotificationTask"
+        class="fr.paris.lutece.plugins.workflow.modules.extendcomment.service.CommentNotificationTask"
+        scope="prototype" />
+        
+    <bean id="workflow-extendcomment.commentNotificationTaskConfig"
+        class="fr.paris.lutece.plugins.workflow.modules.extendcomment.business.CommentNotificationTaskConfig"
+        scope="prototype" />
+
+    <bean id="workflow-extendcomment.commentNotificationTaskComponent"
+        class="fr.paris.lutece.plugins.workflow.modules.extendcomment.web.CommentNotificationTaskComponent"
+        p:taskType-ref="workflow-extendcomment.taskCommentNotification"
+        p:taskConfigService-ref="workflow-extendcomment.taskCommentNotificationConfigService" />
+
+</beans>
