@@ -27,7 +27,7 @@
         p:key="taskCommentNotification" p:titleI18nKey="module.workflow.extendcomment.task_comment_notification.title"
         p:beanName="workflow-extendcomment.commentNotificationTask"
         p:configBeanName="workflow-extendcomment.commentNotificationTaskConfig"
-        p:configRequired="true" p:formTaskRequired="true"
+        p:configRequired="true" p:formTaskRequired="false"
         p:taskForAutomaticAction="true" />
 
     <bean id="workflow-extendcomment.commentNotificationTask"
