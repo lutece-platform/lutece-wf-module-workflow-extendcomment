@@ -49,6 +49,7 @@ import fr.paris.lutece.plugins.workflow.modules.extendcomment.business.CommentNo
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
+import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -64,11 +65,15 @@ public class CommentNotificationService implements ICommentNotificationService
     private static final String MARK_DATE_CREATION = "date_creation";
     private static final String MARK_COMMENT = "comment";
     private static final String MARK_RESOURCE_ID = "resourceId";
+    private static final String MARK_FIRSTNAME_USER = "firstNameUser";
+    private static final String MARK_EMAIL_USER = "emailUser";
 
     // PROPERTIES
     private static final String PROPERTY_CREATION_DATE = "module.workflow.extendcomment.task_comment_notification_config.markers.creation_date";
     private static final String PROPERTY_COMMENT = "module.workflow.extendcomment.task_comment_notification_config.markers.comment_content";
     private static final String PROPERTY_RESOURCE_ID = "module.workflow.extendcomment.task_comment_notification_config.markers.resource_id";
+    private static final String PROPERTY_FIRSTNAME_USER = "module.workflow.extendcomment.task_comment_notification_config.markers.firstname_user";
+    private static final String PROPERTY_EMAIL_USER = "module.workflow.extendcomment.task_comment_notification_config.markers.email_user";
 
     @Inject
     @Named( CommentService.BEAN_SERVICE )
@@ -87,6 +92,8 @@ public class CommentNotificationService implements ICommentNotificationService
         refList.addItem( MARK_DATE_CREATION, I18nService.getLocalizedString( PROPERTY_CREATION_DATE, locale ) );
         refList.addItem( MARK_COMMENT, I18nService.getLocalizedString( PROPERTY_COMMENT, locale ) );
         refList.addItem( MARK_RESOURCE_ID, I18nService.getLocalizedString( PROPERTY_RESOURCE_ID, locale ) );
+        refList.addItem( MARK_FIRSTNAME_USER, I18nService.getLocalizedString( PROPERTY_FIRSTNAME_USER, locale ) );
+        refList.addItem( MARK_EMAIL_USER, I18nService.getLocalizedString( PROPERTY_EMAIL_USER, locale ) );
 
         return refList;
     }
@@ -102,6 +109,8 @@ public class CommentNotificationService implements ICommentNotificationService
         markers.put( MARK_DATE_CREATION, comment.getDateComment( ) );
         markers.put( MARK_COMMENT, comment.getComment( ) );
         markers.put( MARK_RESOURCE_ID, comment.getIdExtendableResource( ) );
+        markers.put( MARK_FIRSTNAME_USER, comment.getName() );
+        markers.put( MARK_EMAIL_USER, comment.getEmail( ) );
 
         return markers;
     }
