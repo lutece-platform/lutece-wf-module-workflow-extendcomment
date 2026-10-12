@@ -1,3 +1,7 @@
+-- liquibase formatted sql
+-- changeset workflow-extendcomment:create_db_workflow-extendcomment.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:1 SELECT COUNT(*) FROM task_forms_extend_comment_notification_cf WHERE 1 = 0
 --
 -- Table structure for task_forms_extend_comment_notification_cf 
 --
