@@ -35,28 +35,24 @@ package fr.paris.lutece.plugins.workflow.modules.extendcomment.service;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-
-import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
-import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
-import fr.paris.lutece.plugins.workflowcore.service.resource.ResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.SimpleTask;
 import fr.paris.lutece.portal.service.i18n.I18nService;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 
  * CommentNotificationTask
  *
  */
+@Dependent
+@Named( "workflow-extendcomment.commentNotificationTask" )
 public class CommentNotificationTask extends SimpleTask
 {
-
-    @Inject
-    @Named( ResourceHistoryService.BEAN_SERVICE )
-    IResourceHistoryService _resourceHistoryService;
 
     @Inject
     @Named( WorkflowCommentPlugin.BEAN_CONFIG )
@@ -65,20 +61,30 @@ public class CommentNotificationTask extends SimpleTask
     @Inject
     private ICommentNotificationService _commentNotificationService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
+    public boolean processTaskWithResult( int nIdResource, String strResourceType, int nIdResourceHistory, HttpServletRequest request, Locale locale,
+            User user )
     {
-        ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdResourceHistory );
+        _commentNotificationService.notifyCommentAuthor( nIdResource, _config.findByPrimaryKey( getId( ) ) );
 
-        _commentNotificationService.notifyCommentAuthor( resourceHistory, _config.findByPrimaryKey( getId( ) ) );
+        return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getTitle( Locale locale )
     {
         return I18nService.getLocalizedString( getTaskType( ).getTitleI18nKey( ), locale );
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void doRemoveConfig( )
     {

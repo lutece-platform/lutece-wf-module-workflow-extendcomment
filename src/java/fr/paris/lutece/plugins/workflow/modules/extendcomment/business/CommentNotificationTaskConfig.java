@@ -34,17 +34,28 @@
 package fr.paris.lutece.plugins.workflow.modules.extendcomment.business;
 
 import fr.paris.lutece.plugins.workflowcore.business.config.TaskConfig;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Named;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 
  * CommentNotificationTaskConfig
  *
  */
+@Dependent
+@Named( "workflow-extendcomment.commentNotificationTaskConfig" )
 public class CommentNotificationTaskConfig extends TaskConfig
 {
+    @NotBlank
     private String _strMessage;
+    @NotBlank
     private String _strSubject;
+    @NotBlank
+    @Email
     private String _strSenderEmail;
+    @NotBlank
     private String _strSenderName;
 
     /**

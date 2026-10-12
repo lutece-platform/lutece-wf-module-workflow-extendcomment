@@ -41,7 +41,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
  * WorkflowCommentPlugin
  *
  */
-public class WorkflowCommentPlugin extends Plugin
+public final class WorkflowCommentPlugin
 {
 
     /**
@@ -49,11 +49,14 @@ public class WorkflowCommentPlugin extends Plugin
      */
     public static final String PLUGIN_NAME = "workflow-extendcomment";
     public static final String BEAN_CONFIG = PLUGIN_NAME + ".taskCommentNotificationConfigService";
+    public static final String BEAN_CONFIG_DAO = PLUGIN_NAME + ".taskCommentNotificationConfigDAO";
+    public static final String BEAN_TASK_TYPE = PLUGIN_NAME + ".taskCommentNotification";
 
-    @Override
-    public void init( )
+    /**
+     * Constants and plugin lookup only.
+     */
+    private WorkflowCommentPlugin( )
     {
-        // Do nothing
     }
 
     /**

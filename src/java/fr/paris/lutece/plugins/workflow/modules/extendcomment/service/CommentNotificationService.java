@@ -37,28 +37,27 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
-import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.workflow.modules.extendcomment.business.CommentNotificationTaskConfig;
-import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
-import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * 
  * CommentNotificationService
  *
  */
+@ApplicationScoped
+@Named( "workflow-extendcomment.commentNotificationService" )
 public class CommentNotificationService implements ICommentNotificationService
 {
     // MARKS
@@ -76,17 +75,15 @@ public class CommentNotificationService implements ICommentNotificationService
     private static final String PROPERTY_EMAIL_USER = "module.workflow.extendcomment.task_comment_notification_config.markers.email_user";
 
     @Inject
-    @Named( CommentService.BEAN_SERVICE )
-    ICommentService _commentService;
+    @Named( "extend-comment.commentService" )
+    private ICommentService _commentService;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ReferenceList getAvailableMarkers( )
+    public ReferenceList getAvailableMarkers( Locale locale )
     {
-        Locale locale = I18nService.getDefaultLocale( );
-
         ReferenceList refList = new ReferenceList( );
         
         refList.addItem( MARK_DATE_CREATION, I18nService.getLocalizedString( PROPERTY_CREATION_DATE, locale ) );
@@ -119,18 +116,17 @@ public class CommentNotificationService implements ICommentNotificationService
      * {@inheritDoc}
      */
     @Override
-    public void notifyCommentAuthor( ResourceHistory resourceHistory, CommentNotificationTaskConfig config )
+    public void notifyCommentAuthor( int nIdComment, CommentNotificationTaskConfig config )
     {
-        Comment comment = _commentService.findByPrimaryKey( resourceHistory.getIdResource( ) );
+        Comment comment = _commentService.findByPrimaryKey( nIdComment );
 
-        if ( comment != null )
+        if ( config != null && comment != null && StringUtils.isNotBlank( comment.getEmail( ) ) )
         {
             Map<String, Object> model = getAvailableMarkersValues( comment );
             
-            HtmlTemplate html = AppTemplateService.getTemplateFromStringFtl( StringUtils.EMPTY, config.getMessage( ), null, model, false );
+            HtmlTemplate html = AppTemplateService.getTemplateFromStringFtl( config.getMessage( ), null, model );
 
-            MailService.sendMailHtml( StringUtils.EMPTY, StringUtils.EMPTY, comment.getEmail( ), config.getSenderName( ), config.getSenderEmail( ),
-                    config.getSubject( ), html.getHtml( ) );
+            MailService.sendMailHtml( comment.getEmail( ), config.getSenderName( ), config.getSenderEmail( ), config.getSubject( ), html.getHtml( ) );
         }
     }
 }

@@ -1,1 +1,0 @@
-package fr.paris.lutece.plugins.workflow.modules.extendcomment.business;

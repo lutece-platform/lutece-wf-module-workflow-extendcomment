@@ -33,11 +33,11 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.extendcomment.service;
 
+import java.util.Locale;
 import java.util.Map;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.workflow.modules.extendcomment.business.CommentNotificationTaskConfig;
-import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.util.ReferenceList;
 
 /**
@@ -50,23 +50,28 @@ public interface ICommentNotificationService
     /**
      * Get available markers
      * 
-     * @param task
+     * @param locale
+     *            the locale of the labels
      * @return reference list of available markers
      */
-    ReferenceList getAvailableMarkers( );
+    ReferenceList getAvailableMarkers( Locale locale );
 
     /**
      * Get available markers values
      * 
-     * @param resourceHistory
+     * @param comment
+     *            the comment
+     * @return the value of each marker
      */
     Map<String, Object> getAvailableMarkersValues( Comment comment );
 
     /**
      * Notify comment author
      * 
-     * @param resourceHistory
+     * @param nIdComment
+     *            the id of the comment
      * @param config
+     *            the task configuration
      */
-    void notifyCommentAuthor( ResourceHistory resourceHistory, CommentNotificationTaskConfig config );
+    void notifyCommentAuthor( int nIdComment, CommentNotificationTaskConfig config );
 }

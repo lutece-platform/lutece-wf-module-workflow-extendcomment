@@ -33,27 +33,32 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.extendcomment.web;
 
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.workflow.modules.extendcomment.service.ICommentNotificationService;
 import fr.paris.lutece.plugins.workflow.modules.extendcomment.service.WorkflowCommentPlugin;
 import fr.paris.lutece.plugins.workflow.web.task.NoFormTaskComponent;
+import fr.paris.lutece.plugins.workflowcore.business.task.ITaskType;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 
  * CommentNotificationTaskComponent
  *
  */
+@ApplicationScoped
+@Named( "workflow-extendcomment.commentNotificationTaskComponent" )
 public class CommentNotificationTaskComponent extends NoFormTaskComponent
 {
 
@@ -63,31 +68,59 @@ public class CommentNotificationTaskComponent extends NoFormTaskComponent
     // MARKS
     private static final String MARK_CONFIG = "config";
     private static final String MARK_EMAIL_MARKERS = "email_markers";
+    private static final String MARK_WEBAPP_URL = "webapp_url";
 
-    @Inject
-    @Named( WorkflowCommentPlugin.BEAN_CONFIG )
-    private ITaskConfigService _config;
-
-    @Inject
     private ICommentNotificationService _commentNotificationService;
 
+    /**
+     * Constructor for the CDI proxy.
+     */
+    CommentNotificationTaskComponent( )
+    {
+    }
+
+    /**
+     * Builds the component of the comment notification task.
+     *
+     * @param taskType
+     *            the task type
+     * @param taskConfigService
+     *            the task configuration service
+     * @param commentNotificationService
+     *            the comment notification service
+     */
+    @Inject
+    public CommentNotificationTaskComponent( @Named( WorkflowCommentPlugin.BEAN_TASK_TYPE ) ITaskType taskType,
+            @Named( WorkflowCommentPlugin.BEAN_CONFIG ) ITaskConfigService taskConfigService, ICommentNotificationService commentNotificationService )
+    {
+        setTaskType( taskType );
+        setTaskConfigService( taskConfigService );
+        _commentNotificationService = commentNotificationService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask task )
     {
         Map<String, Object> model = new HashMap<>( );
 
-        model.put( MARK_CONFIG, _config.findByPrimaryKey( task.getId( ) ) );
-        model.put( MARK_EMAIL_MARKERS, _commentNotificationService.getAvailableMarkers( ) );
+        model.put( MARK_CONFIG, getTaskConfigService( ).findByPrimaryKey( task.getId( ) ) );
+        model.put( MARK_EMAIL_MARKERS, _commentNotificationService.getAvailableMarkers( locale ) );
+        model.put( MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
 
         HtmlTemplate html = AppTemplateService.getTemplate( TEMPLATE_CONFIG, locale, model );
 
         return html.getHtml( );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Locale locale, ITask task )
     {
         return null;
     }
-
 }
